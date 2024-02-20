@@ -1,12 +1,16 @@
 import './App.css';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import IndexRoute from './routes/IndexRoute';
 
 function App() {
   return (
     <div className="App">
       <Header />
-      <h1>Hello World</h1>
+
+      <div className='app-container'>
+        <IndexRoute />
+      </div>
       <Footer />
     </div>
   );

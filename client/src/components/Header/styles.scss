@@ -13,24 +13,22 @@
     }
 }
 
-.my-navbar {
-    width: 60%;
-    display: flex;
-    flex-flow: row wrap;
-    justify-content: center;
-    align-items: center;
+li {
+    list-style: none;
+}
 
-    & > a:last-child {
-        background-color: #6750a4 !important;
-        color: white !important;
-        border-radius: 8px;
-    }
+.navbar-nav {
+    width: 70%;
+    margin: auto !important;
+    display: flex;
+    justify-content: space-evenly;
 }
 
 a {
-    padding: 12px;
-    margin: 0 12px;
+    padding: 8px 12px !important;
+    margin: 0 4px;
     text-decoration: none;
+    border-radius: 8px;
     font-weight: bold;
     font-size: 20px !important; 
 
@@ -45,9 +43,20 @@ a {
         border-top: 1px dotted #ccc !important;
         border-bottom: 1px dotted #ccc !important;
     }
+
+    &.active {
+        //background-color: #6750a4 !important;
+        color: white !important;
+        background-color: rgba(99, 97, 88, 0.737) !important;
+    }
 }
 
 .login-btn {
     border: 1px solid #effeef !important;
     background-color: #eaddff !important;
+}
+
+.signup-btn {
+    background-color: #6750a4 !important;
+    color: white !important;
 }
