@@ -9,9 +9,6 @@ body {
 .App {
   max-width: 1400px;
   margin: 2px auto;
-
-  border: 1px solid #f2f2f2;
-  border-radius: 4px;
 }
 
 @keyframes reload {

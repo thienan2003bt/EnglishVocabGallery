@@ -17,7 +17,7 @@ function Header(props) {
 
     return (
         <header className='my-header'>
-            <div className='container'>
+            <div className='container w-100'>
                 <nav className="navbar navbar-expand-lg bg-light ">
                     <div className="container-fluid">
                         <li className="nav-item">

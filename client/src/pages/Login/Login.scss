@@ -1,0 +1,42 @@
+.login-container {
+    background-color: #f0f2f5;
+    min-height: 80vh;
+    padding-top: 20px;
+
+    & .container-left {
+        background-color: white;
+
+        & .detail {
+            font-style: italic;
+        }
+    }
+
+    & .container-right {
+        background-color: white;
+
+        border-radius: 8px;
+
+        box-shadow: 0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%);
+        box-sizing: border-box;
+
+        & .forgot-password {
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    & button {
+        min-width: 150px;
+    }
+
+    & h1 {
+        font-size: 32px;
+        text-transform: uppercase;
+        
+        
+        color: #1877f2;
+    }
+}
