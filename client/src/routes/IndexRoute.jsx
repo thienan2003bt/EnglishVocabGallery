@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './PrivateRoute';
 import Login from '../pages/Login/Login';
 import Signup from '../pages/Signup/Signup';
+import Vocabulary from '../pages/Vocabulary/Vocabulary';
 
 function IndexRoute(props) {
     return (
@@ -16,7 +17,7 @@ function IndexRoute(props) {
                 {/* Private */}
                 <Route path="/vocabulary" element={
                     <PrivateRoute>
-                        <span>Element has been developed soon ...</span>
+                        <Vocabulary />
                     </PrivateRoute>
                 } >
                 </Route>

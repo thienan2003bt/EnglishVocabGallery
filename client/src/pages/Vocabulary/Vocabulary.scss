@@ -1,0 +1,40 @@
+.vocab-container {
+    background-color: #e0e2eb;
+    
+    & .vocab-title {
+        color: rgba(99, 97, 88, 0.737) !important;;
+        padding: 4px 0;
+        margin: 16px 0;
+    }
+    
+    & .vocab-toolbar {
+        //height: 70px;
+
+        & .input-group-text {
+            width: 40px;
+            padding: 10px 0px;
+        }
+
+        & .filter {
+            & .filter-label {
+                line-height: 70px;
+                margin: 0 8px 0 12px;
+            }
+
+            & .filter-select-divider {
+                color: rgba(99, 97, 88, 0.737) !important;
+            }
+    
+            & .filter-select {
+                height: 40px !important;
+                margin-top: 15px;
+            }
+        }
+    }
+
+    & .vocab-content {
+        & .font-weight-bold {
+            font-weight: bold !important;
+        }
+    }
+}

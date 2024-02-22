@@ -9,7 +9,7 @@
 ✅ Using **SASS / SCSS** instead of *CSS* as external stylesheet.
 ✅ Using **Lodash** dependency for deep cloning objects.
 ✅ Using **Axios** dependency for interface with server.
-✅ Using **React Toastify** dependency for making toast.
+✅ More dependencies:  **React Toastify, React Paginate**.
 
 ### 📍Backend
 ✅ Using **NodeJS** platform + **ExpressJS** framework.
