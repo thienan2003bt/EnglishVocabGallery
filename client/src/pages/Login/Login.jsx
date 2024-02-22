@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom';
 import './Login.scss';
 function Login(props) {
 
-    const [email, setEmail] = useState();
-    const [password, setPassword] = useState();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
     const handleLoginForm = () => { };
 

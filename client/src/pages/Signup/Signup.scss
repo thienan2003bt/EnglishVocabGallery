@@ -1,4 +1,4 @@
-.login-container {
+.signup-container {
     background-color: #f0f2f5;
     min-height: 80vh;
     padding-top: 20px;
@@ -20,11 +20,7 @@
         box-sizing: border-box;
 
         & .forgot-password {
-            text-decoration: none;
             font-style: italic;
-            &:hover {
-                text-decoration: underline;
-            }
         }
     }
 

@@ -7,6 +7,9 @@
 ### 📍Frontend
 ✅ Using **ReactJS** library along with **React Router Dom v6**.
 ✅ Using **SASS / SCSS** instead of *CSS* as external stylesheet.
+✅ Using **Lodash** dependency for deep cloning objects.
+✅ Using **Axios** dependency for interface with server.
+✅ Using **React Toastify** dependency for making toast.
 
 ### 📍Backend
 ✅ Using **NodeJS** platform + **ExpressJS** framework.

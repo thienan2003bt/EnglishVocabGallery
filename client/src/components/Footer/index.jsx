@@ -17,7 +17,7 @@ function Footer(props) {
         <footer className='my-footer'>
             {user
                 ? <p className='copyright-msg'>All right reserved. Copyright ©️ {curYear} by {user.name}.</p>
-                : <p className='copyright-msg'>All right reserved. Copyright ©️ anonymous.</p>
+                : <p className='copyright-msg'>All right reserved. Copyright ©️ THTAn.</p>
             }
         </footer>
     );

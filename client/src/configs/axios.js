@@ -1,0 +1,25 @@
+import axios from 'axios';
+
+const instance = axios.create({
+    baseURL: 'http://localhost:5000/'
+});
+
+instance.defaults.withCredentials = true;
+
+//REQUEST
+instance.interceptors.request.use((config) => {
+    return config;
+}, (err) => {
+    return Promise.reject(err);
+});
+
+
+//RESPONSE
+instance.interceptors.response.use((response) => {
+    return response.data;
+}, (err) => {
+    return Promise.reject(err);
+});
+
+
+export default instance;

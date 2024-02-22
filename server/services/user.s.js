@@ -2,7 +2,7 @@ const db = require('../models/index');
 const bcrypt = require('bcrypt');
 
 //setting up variable and method
-const returnedData = {
+let returnedData = {
     status: 0,
     message: '',
     data: {},
@@ -20,24 +20,20 @@ const updateReturnedData = (status, message, data) => {
 // supporting methods
 const validateUserDataBeforeInsertion = (userData) => {
     let isValid = true;
-    const attributeArr = ['username', 'password', 'email'];
+    const attributeArr = ['password', 'email'];
 
-    attributeArr.forEach(attribute => {
+    for (let i = 0; i < attributeArr.length; i++) {
+        let attribute = attributeArr[i];
         if (userData.hasOwnProperty(attribute) === false) {
-            isValid = false;
             updateReturnedData(400, '', attribute);
+            return false;
         }
-    })
-
-    if (isValid === false) {
-        return isValid;
     }
 
-    if (!userData.roleID) {
-        //userData has role "Guest" by default
-        userData.roleID = 1;
-    }
+    //userData has role "Guest" by default
+    if (!userData.roleID) userData.roleID = 1;
 
+    return isValid;
 }
 
 const hashPassword = (password) => {
@@ -63,7 +59,7 @@ const getAllUsers = async (page, limit) => {
             let offset = (page - 1) * limit;
 
             data = await db.User.findAll({
-                attributes: ['id', 'username', 'email', 'phone', 'gender', 'address', 'roleID'],
+                attributes: ['id', 'username', 'email', 'phone', 'gender', 'address'],
                 include: {
                     model: db.Role, attributes: ['id', 'name', 'description']
                 },
@@ -104,6 +100,7 @@ const createNewUser = async (userData) => {
         }
 
         userData.password = hashPassword(userData.password);
+        userData.createdAt = new Date();
 
         await db.User.create(userData);
         return updateReturnedData(200, `New user is created successfully !`, userData.id);
@@ -125,8 +122,9 @@ const updateUser = async (userData) => {
         if (!user) {
             return updateReturnedData(404, "User is not found", null);
         }
-        //ensure that the username is cannot be changed
-        userData.username = user.username;
+        //ensure that the email is cannot be changed
+        userData.email = user.email;
+        user.updatedAt = new Date();
 
         await user.update();
 
@@ -158,9 +156,40 @@ const deleteUser = async (userID) => {
     }
 }
 
+const handleLogin = async (userData) => {
+    try {
+        let user = await db.User.findOne({
+            where: {
+                email: userData.email,
+            },
+            attributes: ['id', 'username', 'password', 'email', 'phone', 'gender', 'address'],
+            include: { model: db.Role, attributes: ['id', 'name', 'description'] },
+            raw: true,
+            nest: true
+        });
+
+        if (!user) return updateReturnedData(400, "Incorrect email or password", null);
+
+        let passwordState = checkPassword(userData.password, user.password);
+
+        if (passwordState === true) {
+            return updateReturnedData(200, "Login successfully", data = {
+                ...user,
+                password: null,
+            });
+        } else {
+            return updateReturnedData(400, "Incorrect email or password", null);
+        }
+    } catch (error) {
+        console.log("User service error: " + error.message);
+        return updateReturnedData(500, "User service error: " + error.message, null);
+    }
+}
+
 module.exports = UserService = {
     getAllUsers,
     createNewUser,
     updateUser,
     deleteUser,
+    handleLogin,
 }
