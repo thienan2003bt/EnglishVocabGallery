@@ -21,7 +21,7 @@ const deleteUser = async (userID) => {
 }
 
 const handleLogin = async (userData) => {
-    let response = await axios.post(`api/login`, { userData });
+    let response = await axios.post(`api/login`, { ...userData });
     return response;
 }
 

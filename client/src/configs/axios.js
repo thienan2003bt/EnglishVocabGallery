@@ -18,7 +18,11 @@ instance.interceptors.request.use((config) => {
 instance.interceptors.response.use((response) => {
     return response.data;
 }, (err) => {
-    return Promise.reject(err);
+    let msg = err.response.data.message;
+    if (msg) {
+        err.message = msg;
+    }
+    return Promise.reject(new Error(msg));
 });
 
 

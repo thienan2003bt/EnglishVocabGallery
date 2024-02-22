@@ -23,12 +23,13 @@ function Signup(props) {
         setUserData(newData);
     }
 
-    const handlePressEnter = () => {
-
+    const handlePressEnter = (event) => {
+        if (event.code === "Enter" || event.code === "NumpadEnter") {
+            handleSignupForm();
+        }
     };
 
     const validateSignupForm = () => {
-        console.log("Have reached validate signup form logic ");
         const toCheckAttributeArr = ['email', 'username', 'password', 'retypePassword'];
         for (let i = 0; i < toCheckAttributeArr.length; i++) {
             let attribute = toCheckAttributeArr[i];

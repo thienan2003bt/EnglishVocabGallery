@@ -99,11 +99,21 @@ const createNewUser = async (userData) => {
             return updateReturnedData(400, `${returnedData.data} is required`, returnedData.data);
         }
 
+        let existingUser = await db.User.findOne({
+            where: {
+                email: userData.email
+            }
+        });
+
+        if (existingUser) {
+            return updateReturnedData(400, `Email is already used by another account !`, null);
+        }
+
         userData.password = hashPassword(userData.password);
         userData.createdAt = new Date();
 
         await db.User.create(userData);
-        return updateReturnedData(200, `New user is created successfully !`, userData.id);
+        return updateReturnedData(200, `New user is created successfully!`, userData.id);
 
     } catch (error) {
         console.log("User service error: " + error.message);
