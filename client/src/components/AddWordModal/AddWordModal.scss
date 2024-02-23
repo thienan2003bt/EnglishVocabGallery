@@ -1,0 +1,16 @@
+.add-word-modal-container {
+    & .red {
+        color: red !important;
+    }
+
+    & label {
+        cursor: help;
+        font-style: italic;
+    }
+
+    & .add-word-modal-content {
+        &  label {
+            margin: 8px 0 4px 0;
+        }
+    }
+}

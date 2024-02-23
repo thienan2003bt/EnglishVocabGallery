@@ -1,6 +1,6 @@
 .vocab-container {
     background-color: #e0e2eb;
-    
+
     & .vocab-title {
         color: rgba(99, 97, 88, 0.737) !important;;
         padding: 4px 0;
@@ -9,6 +9,11 @@
     
     & .vocab-toolbar {
         //height: 70px;
+        & i:before {
+            text-align: center !important;
+            width: 32px;
+            margin-left: 4px;
+        }
 
         & .input-group-text {
             width: 40px;

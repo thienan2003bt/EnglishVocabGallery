@@ -1,14 +1,87 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactPaginate from 'react-paginate';
-
+import { toast } from 'react-toastify';
 import './Vocabulary.scss';
+import _ from 'lodash';
+import AddWordModal from '../../components/AddWordModal/AddWordModal';
 
 function Vocabulary(props) {
 
     const [totalPages, setTotalPages] = useState(10);
+    const [limit, setLimit] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [isShowAddWordModal, setIsShowAddWordModal] = useState(false);
+    const [dataModal, setDataModal] = useState(null);
 
-    const handlePageClick = () => {
 
+    const defaultWordArr = [{
+        word: 'abbess',
+        type: 'noun',
+        phonetic: `/ˈæbes/`,
+        definitions: [{
+            definition: "a woman who is the head of an abbey of nuns",
+        },],
+    }, {
+        word: 'abdominous',
+        type: 'adjective',
+        phonetic: `/æb'dɑmənəs/`,
+        definitions: [{
+            definition: "having a large belly",
+        },],
+    }]
+    const [wordArr, setWordArr] = useState(defaultWordArr);
+
+
+    const handlePageClick = async (event) => {
+        let selectedPage = parseInt(event.selected) + 1;
+        setCurrentPage(selectedPage);
+
+        //TODO: delete all stuffs below when call API to get all words
+        let _wordArr = _.cloneDeep(defaultWordArr);
+        _wordArr = _wordArr.slice((selectedPage - 1) * limit, selectedPage * limit);
+        setWordArr(_wordArr);
+    }
+
+
+    const handleEditWord = (index) => {
+        if (index >= 0 && index < wordArr.length) {
+            if (window.confirm(`Do you want to edit the word: ${wordArr[index].word} ?`) === true) {
+                //TODO: call API here
+                let _wordArr = _.cloneDeep(wordArr);
+                setWordArr(_wordArr);
+                toast.success(`Successfully edit the word: ${wordArr[index].word}!`);
+            }
+        } else {
+            toast.error('Invalid index of word !');
+        }
+    }
+
+    const handleDeleteWord = (index) => {
+        if (index >= 0 && index < wordArr.length) {
+            if (window.confirm(`Do you want to delete the word: ${wordArr[index].word} ?`) === true) {
+
+                //TODO: call API here
+                let _wordArr = _.cloneDeep(wordArr);
+                //remove the line below when the API is called
+                _wordArr.splice(index, 1);
+                setWordArr(_wordArr);
+                toast.success(`Successfully delete the word: ${wordArr[index].word}!`);
+            }
+        } else {
+            toast.error('Invalid index of word !');
+        }
+    }
+
+
+    //modal functions
+    const handleCloseAddWordModal = async () => {
+        setIsShowAddWordModal(false);
+
+    }
+
+    const handleConfirmAddWordModal = async () => {
+        setIsShowAddWordModal(false);
+        toast.success("New word is added successfully !");
     }
 
     return (
@@ -45,34 +118,12 @@ function Vocabulary(props) {
 
 
                     <div className='col-3 my-3 ms-5'>
-                        <button className='btn btn-success mx-2'>Add new word</button>
-                        <button className='btn btn-primary mx-2'>Refresh</button>
+                        <button type='button' className='btn btn-success mx-2' onClick={() => setIsShowAddWordModal(true)}>Add new word</button>
+                        <button type='button' className='btn btn-primary mx-2'>Refresh</button>
                     </div>
                 </div>
 
                 <hr />
-
-                <div className='vocab-top-pagination my-2'>
-                    <ReactPaginate
-                        containerClassName='pagination justify-content-center' //important
-                        activeClassName='active'
-                        breakLabel="..."
-                        nextLabel="Next ->"
-                        onPageChange={handlePageClick}
-                        pageRangeDisplayed={5}
-                        marginPagesDisplayed={2}
-                        pageCount={totalPages}
-                        previousLabel="<- Previous"
-                        pageClassName='page-item'
-                        pageLinkClassName='page-link'
-                        breakClassName='page-item'
-                        breakLinkClassName='page-link'
-                        previousClassName='page-item'
-                        previousLinkClassName='page-link'
-                        nextClassName='page-item'
-                        nextLinkClassName='page-link'
-                        renderOnZeroPageCount={null} />
-                </div>
 
 
                 <div className='vocab-content my-3 table-responsive'>
@@ -90,28 +141,31 @@ function Vocabulary(props) {
                         </thead>
 
                         <tbody className="table-group-divider">
-                            <tr>
-                                <th scope='row'>1</th>
-                                <td className='font-weight-bold'>abbess</td>
-                                <td>noun</td>
-                                <td>/ˈæbes/</td>
-                                <td>a woman who is the head of an abbey of nuns</td>
-                                <td>
-                                    <button className='btn btn-warning mx-1'>Edit</button>
-                                    <button className='btn btn-danger mx-1'>Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope='row'>2</th>
-                                <td className='font-weight-bold'>abdominous</td>
-                                <td>adjective</td>
-                                <td>/æb'dɑmənəs/</td>
-                                <td>having a large belly</td>
-                                <td>
-                                    <button className='btn btn-warning mx-1'>Edit</button>
-                                    <button className='btn btn-danger mx-1'>Delete</button>
-                                </td>
-                            </tr>
+                            {wordArr && wordArr.length > 0 ? wordArr.map((ele, index) => {
+                                return <tr key={index}>
+                                    <th scope='row'>{index + 1}</th>
+                                    <td className='font-weight-bold'>{ele.word}</td>
+                                    <td>{ele.type}</td>
+                                    <td>{ele.phonetic}</td>
+                                    <td>{ele.definitions[0].definition}</td>
+                                    <td>
+                                        <button className='btn btn-warning mx-1'
+                                            onClick={() => handleEditWord(index)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button className='btn btn-danger mx-1'
+                                            onClick={() => handleDeleteWord(index)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </td>
+                                </tr>
+                            })
+                                : <tr>
+                                    <td colSpan={6} className='font-weight-bold'> <h3>There is no word at this page !</h3></td>
+                                </tr>
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -138,6 +192,9 @@ function Vocabulary(props) {
                         nextLinkClassName='page-link'
                         renderOnZeroPageCount={null} />
                 </div>
+
+
+                <AddWordModal show={isShowAddWordModal} dataModal={dataModal} handleClose={handleCloseAddWordModal} handleSave={handleConfirmAddWordModal} />
             </div>
 
         </div>

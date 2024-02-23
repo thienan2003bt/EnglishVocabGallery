@@ -6,10 +6,6 @@ function PrivateRoute(props) {
     const { user } = useContext(UserContext);
     const { children } = props;
 
-    useEffect(() => {
-        console.log("User context: ");
-        console.log(user);
-    }, []);
     return (
         <div>
             {(user && user.isAuthenticated === true)
