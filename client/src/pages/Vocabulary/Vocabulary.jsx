@@ -81,7 +81,6 @@ function Vocabulary(props) {
 
     const handleConfirmAddWordModal = async () => {
         setIsShowAddWordModal(false);
-        toast.success("New word is added successfully !");
     }
 
     return (

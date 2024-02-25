@@ -4,8 +4,10 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
+import WordService from '../../services/word.s';
 
 import './AddWordModal.scss';
+
 function AddWordModal(props) {
     const { show, dataModal, handleClose, handleSave } = props;
     const defaultWordData = {
@@ -14,6 +16,8 @@ function AddWordModal(props) {
         phonetic: '',
         categories: '',
         definitions: [],
+        level: 'A1',
+        image: '',
         synonyms: '',
         antonyms: '',
     }
@@ -32,9 +36,31 @@ function AddWordModal(props) {
 
 
 
-
     const checkValidate = () => {
+        const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level', 'categories'];
+        for (let i = 0; i < validateAttributes.length; i++) {
+
+
+            let attribute = validateAttributes[i];
+
+            if (!wordData[attribute]) {
+                toast.error(`${attribute} is required`);
+                return false;
+            }
+
+            if (attribute === 'word' && wordData[attribute].includes(' ') === true) {
+                toast.error("Only single token word is allowed !");
+                return false;
+            }
+        }
         return true;
+    }
+
+    const buildPersistData = () => {
+        const _wordData = _.cloneDeep(wordData);
+        _wordData.definitions = wordData.definitions.split('\n');
+
+        return _wordData;
     }
 
     const handleConfirm = async () => {
@@ -42,9 +68,17 @@ function AddWordModal(props) {
         if (validState === true) {
 
             try {
-                //TODO: call API
+                let persistData = buildPersistData();
+                console.log("Persist data: ");
+                console.log(persistData);
 
-                handleSave();
+                let response = await WordService.createNewWord(persistData);
+                if (response && response.data && parseInt(response.status) === 200) {
+                    toast.success(response.message);
+                    handleSave();
+                } else {
+                    toast.error("Error creating new word: " + response?.message);
+                }
             } catch (error) {
                 toast.error("Error handling request: " + error.message);
             }
@@ -74,7 +108,7 @@ function AddWordModal(props) {
                                     Each <label htmlFor='categories' className='red'>categories</label><span>, </span>
                                     <label htmlFor='synonyms' className='red'> synonyms </label><span> or </span>
                                     <label htmlFor='antonyms' className='red'> antonyms </label>
-                                    <span> separated by <span className='red'> semicolon ';' </span> character.</span>
+                                    <span> separated by <span className='red'> comma ',' </span> character.</span>
                                 </i>
                             </div>
                             <div className='text-center'>
@@ -102,6 +136,12 @@ function AddWordModal(props) {
                                     <option value="Conjunction">Conjunction</option>
                                 </select>
                             </div>
+                            <div className='col-12 form-group'>
+                                <label htmlFor="definitions">Definitions <span className='red'>(*)</span>: </label>
+                                <textarea className="form-control" rows='3'
+                                    type="text" name="definitions" id="definitions"
+                                    value={wordData.definitions} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
+                            </div>
                             <div className='col-6 form-group'>
                                 <label htmlFor="phonetic">Phonetic <span className='red'>(*)</span>: </label>
                                 <input className="form-control"
@@ -110,16 +150,28 @@ function AddWordModal(props) {
                             </div>
 
                             <div className='col-6 form-group'>
+                                <label htmlFor="level">Level: <span className='red'>(*)</span>: </label>
+                                <select className="form-select" name="level" id="level"
+                                    value={wordData.level} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} >
+                                    <option defaultValue="A1">A1</option>
+                                    <option value="A2">A2</option>
+                                    <option value="B1">B1</option>
+                                    <option value="B2">B2</option>
+                                    <option value="C1">C1</option>
+                                    <option value="C2">C2</option>
+                                </select>
+                            </div>
+                            <div className='col-6 form-group'>
                                 <label htmlFor="categories">Categories: <span className='red'>(*)</span>: </label>
                                 <input className="form-control"
                                     type="text" name="categories" id="categories"
                                     value={wordData.categories} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
                             </div>
-                            <div className='col-12 form-group'>
-                                <label htmlFor="definitions">Definitions <span className='red'>(*)</span>: </label>
-                                <textarea className="form-control" rows='4'
-                                    type="text" name="definitions" id="definitions"
-                                    value={wordData.definitions} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
+                            <div className='col-6 form-group'>
+                                <label htmlFor="image">Image: </label>
+                                <input className="form-control"
+                                    type="file" name="image" id="image"
+                                    value={wordData.image} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
                             </div>
                             <div className='col-6 form-group'>
                                 <label htmlFor="synonyms">Synonyms: </label>
