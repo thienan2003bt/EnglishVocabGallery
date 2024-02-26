@@ -113,7 +113,26 @@ const deleteDefinition = async (definitionID) => {
         }
         //ensure that the username is cannot be changed
         await existingDefinition.destroy();
-        return new APIReturnData(200, "Delete user successfully !", definitionID);
+        return new APIReturnData(200, "Delete definition successfully !", definitionID);
+    } catch (error) {
+        console.log("Definition service error: " + error.message);
+        return new APIReturnData(500, "Definition service error: " + error.message, null);
+    }
+}
+
+const getDefinitionsByWord = async (wordID) => {
+    try {
+        let data = await db.Definition.findAll({
+            where: { wordID: wordID },
+            raw: true,
+            order: [['upVotes', 'DESC'], ['id', 'DESC']]
+        });
+
+        if (!data) {
+            return new APIReturnData(404, "Definition is not found !", null);
+        }
+
+        return new APIReturnData(200, `All ${data.length} definitions returned successfully !`, data);
     } catch (error) {
         console.log("Definition service error: " + error.message);
         return new APIReturnData(500, "Definition service error: " + error.message, null);
@@ -124,7 +143,8 @@ const DefinitionService = {
     readAllDefinitions,
     createNewDefinition,
     updateDefinition,
-    deleteDefinition
+    deleteDefinition,
+    getDefinitionsByWord
 }
 
 

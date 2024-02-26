@@ -37,6 +37,18 @@ const addAllNewDefinitions = async (wordData, wordID) => {
     });
 }
 
+const buildWordDataWithDefinitions = async (wordArr) => {
+    if (!wordArr || wordArr.length <= 0) {
+        return new Error("Word array is empty");
+    }
+    for (let i = 0; i < wordArr.length; i++) {
+        let word = wordArr[i];
+        let response = await DefinitionService.getDefinitionsByWord(word.id);
+        wordArr[i].definitions = response.data;
+    }
+
+    return wordArr;
+}
 // functional methods
 const readAllWords = async (page, limit) => {
     try {
@@ -47,8 +59,7 @@ const readAllWords = async (page, limit) => {
             limit = +limit;
             let offset = (page - 1) * limit;
 
-            const { count, rows } = await db.Word.findAndCountAll({
-                include: { model: db.Definition },
+            let { count, rows } = await db.Word.findAndCountAll({
                 raw: true,
                 nest: true,
                 offset: offset,
@@ -57,6 +68,8 @@ const readAllWords = async (page, limit) => {
             });
 
             if (count && rows) {
+                rows = await buildWordDataWithDefinitions(rows);
+
                 data = {
                     wordArr: rows,
                     total: count,
@@ -69,7 +82,6 @@ const readAllWords = async (page, limit) => {
             }
         } else {
             data = await db.Word.findAll({
-                include: { model: db.Definition },
                 raw: true,
                 nest: true,
                 order: [['id', 'DESC']]

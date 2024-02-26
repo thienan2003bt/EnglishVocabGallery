@@ -16,22 +16,7 @@ function Vocabulary(props) {
     const [dataModal, setDataModal] = useState(null);
 
 
-    const defaultWordArr = [{
-        word: 'abbess',
-        type: 'noun',
-        phonetic: `/ˈæbes/`,
-        definitions: [{
-            definition: "a woman who is the head of an abbey of nuns",
-        },],
-    }, {
-        word: 'abdominous',
-        type: 'adjective',
-        phonetic: `/æb'dɑmənəs/`,
-        definitions: [{
-            definition: "having a large belly",
-        },],
-    }]
-    const [wordArr, setWordArr] = useState(defaultWordArr);
+    const [wordArr, setWordArr] = useState({});
 
 
     //did mount
@@ -44,15 +29,18 @@ function Vocabulary(props) {
         fetchAllWords();
     }, [currentPage, limit]);
 
+    const restructureWordData = (data) => {
+        setWordArr(data.wordArr);
+        setTotalWords(data.total);
+        setTotalPages(data.totalPage);
+    }
 
     //functional methods
     const fetchAllWords = async () => {
         try {
             let response = await WordService.fetchAllWords(currentPage, limit);
             if (response && response.data && response.status === 200) {
-                setWordArr(response.data.wordArr);
-                setTotalWords(response.data.total);
-                setTotalPages(response.data.totalPage);
+                restructureWordData(response.data);
             } else {
                 toast.error("Error fetching words: " + response?.message);
             }
@@ -168,6 +156,7 @@ function Vocabulary(props) {
                         <thead>
                             <tr>
                                 <th scope='col'>#</th>
+                                <th scope='col'>ID</th>
                                 <th scope='col'>Word</th>
                                 <th scope='col'>Type</th>
                                 <th scope='col'>Phonetic</th>
@@ -181,11 +170,12 @@ function Vocabulary(props) {
                             {wordArr && wordArr.length > 0 ? wordArr.map((ele, index) => {
                                 return <tr key={index}>
                                     <th scope='row'>{index + 1}</th>
+                                    <td>{ele.id}</td>
                                     <td className='font-weight-bold'>{ele.word}</td>
                                     <td>{ele.type}</td>
                                     <td>{ele.phonetic}</td>
-                                    {ele.definitions
-                                        ? <td>{ele.definitions[0].definition}</td>
+                                    {ele.definitions && ele.definitions.length > 0
+                                        ? <td>{ele.definitions[0].content}</td>
                                         : <td></td>
                                     }
                                     <td>
