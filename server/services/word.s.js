@@ -1,14 +1,41 @@
 const db = require('../models/index');
 const APIReturnData = require('../models/APIReturnData');
-
+const DefinitionService = require('./definition.s');
 
 //supporting methods
 const validateWordDataBeforeInsertion = (wordData) => {
-    //TODO: implement this
-    wordData.definitions = null; //DELETE THIS
+    const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level', 'categories'];
+    for (let i = 0; i < validateAttributes.length; i++) {
+        let attribute = validateAttributes[i];
+
+        if (!wordData[attribute]) {
+            return false;
+        }
+
+        if (attribute === 'word' && wordData[attribute].includes(' ') === true) {
+            return false;
+        }
+    }
     return true;
 }
 
+const addAllNewDefinitions = async (wordData, wordID) => {
+    wordData.definitions.forEach(async (definition) => {
+        definition.wordID = wordID;
+
+        try {
+            let response = await DefinitionService.createNewDefinition(definition);
+            if (parseInt(response.status) === 200) {
+                console.log("Create definition successfully with content: ");
+                console.log(definition.content);
+            } else {
+                console.log("Error creating new definition: " + definition.content + "; msg: " + response?.message);
+            }
+        } catch (error) {
+            console.log("Error creating new definition: " + definition.content + "; msg: " + error.message);
+        }
+    });
+}
 
 // functional methods
 const readAllWords = async (page, limit) => {
@@ -64,7 +91,7 @@ const createNewWord = async (wordData) => {
     try {
         let validateState = validateWordDataBeforeInsertion(wordData);
         if (validateState === false) {
-            return new APIReturnData(400, `One of the properties is required`, null);
+            return new APIReturnData(400, `One of the properties is emptied or incorrect`, null);
         }
 
         let existingWord = await db.Word.findOne({
@@ -80,9 +107,10 @@ const createNewWord = async (wordData) => {
 
         wordData.createdAt = new Date();
 
-        await db.Word.create(wordData);
-        return new APIReturnData(200, `New word is created successfully!`, wordData.word);
+        let wordRes = await db.Word.create(wordData);
 
+        addAllNewDefinitions(wordData, wordRes.dataValues.id);
+        return new APIReturnData(200, `New word is created successfully!`, wordData.word);
     } catch (error) {
         console.log("Word service error: " + error.message);
         return new APIReturnData(500, "Word service error: " + error.message, null);

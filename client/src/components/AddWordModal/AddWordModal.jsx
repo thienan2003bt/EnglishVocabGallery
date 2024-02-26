@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 import WordService from '../../services/word.s';
+import { UserContext } from '../../context/UserContext';
 
 import './AddWordModal.scss';
 
 function AddWordModal(props) {
+    const { user } = useContext(UserContext);
     const { show, dataModal, handleClose, handleSave } = props;
     const defaultWordData = {
         word: '',
@@ -59,6 +61,15 @@ function AddWordModal(props) {
     const buildPersistData = () => {
         const _wordData = _.cloneDeep(wordData);
         _wordData.definitions = wordData.definitions.split('\n');
+
+        _wordData.definitions.forEach((definition, index) => {
+            _wordData.definitions[index] = {
+                content: definition,
+                upVotes: 0,
+                downVotes: 0,
+                author: user.account.id,
+            }
+        });
 
         return _wordData;
     }
