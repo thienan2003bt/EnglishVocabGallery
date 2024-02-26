@@ -4,9 +4,11 @@ import { toast } from 'react-toastify';
 import './Vocabulary.scss';
 import _ from 'lodash';
 import AddWordModal from '../../components/AddWordModal/AddWordModal';
+import WordService from '../../services/word.s';
 
 function Vocabulary(props) {
 
+    const [totalWords, setTotalWords] = useState(0);
     const [totalPages, setTotalPages] = useState(10);
     const [limit, setLimit] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
@@ -32,14 +34,38 @@ function Vocabulary(props) {
     const [wordArr, setWordArr] = useState(defaultWordArr);
 
 
+    //did mount
+    useEffect(() => {
+        fetchAllWords();
+    }, [])
+
+    //re-render whenever currentPage changes
+    useEffect(() => {
+        fetchAllWords();
+    }, [currentPage, limit]);
+
+
+    //functional methods
+    const fetchAllWords = async () => {
+        try {
+            let response = await WordService.fetchAllWords(currentPage, limit);
+            if (response && response.data && response.status === 200) {
+                setWordArr(response.data.wordArr);
+                setTotalWords(response.data.total);
+                setTotalPages(response.data.totalPage);
+            } else {
+                toast.error("Error fetching words: " + response?.message);
+            }
+        } catch (error) {
+            toast.error("Error fetching words: " + error.message);
+
+        }
+    }
+
     const handlePageClick = async (event) => {
         let selectedPage = parseInt(event.selected) + 1;
         setCurrentPage(selectedPage);
 
-        //TODO: delete all stuffs below when call API to get all words
-        let _wordArr = _.cloneDeep(defaultWordArr);
-        _wordArr = _wordArr.slice((selectedPage - 1) * limit, selectedPage * limit);
-        setWordArr(_wordArr);
     }
 
 
@@ -108,10 +134,20 @@ function Vocabulary(props) {
 
 
                     </div>
-                    <div className='col-5 my-3'>
-                        <div className='input-group'>
+                    <div className='col-5 my-3 d-flex flex-row flex-wrap'>
+                        <div className='input-group w-50 me-3'>
                             <i className="input-group-text fa-brands fa-searchengin"></i>
                             <input className='form-control' type='text' id='search' name='search' placeholder='Search here ...' />
+                        </div>
+                        <label className='limit-label'>Word / Page: </label>
+                        <div className='limit-select-container'>
+                            <select className="form-select limit-select"
+                                value={limit} onChange={(e) => setLimit(e.target.value)}>
+                                <option defaultValue="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
                         </div>
                     </div>
 
@@ -119,6 +155,7 @@ function Vocabulary(props) {
                     <div className='col-3 my-3 ms-5'>
                         <button type='button' className='btn btn-success mx-2' onClick={() => setIsShowAddWordModal(true)}>Add new word</button>
                         <button type='button' className='btn btn-primary mx-2'>Refresh</button>
+
                     </div>
                 </div>
 
@@ -134,6 +171,7 @@ function Vocabulary(props) {
                                 <th scope='col'>Word</th>
                                 <th scope='col'>Type</th>
                                 <th scope='col'>Phonetic</th>
+
                                 <th scope='col'>Definitions</th>
                                 <th scope='col'>Actions</th>
                             </tr>
@@ -146,7 +184,10 @@ function Vocabulary(props) {
                                     <td className='font-weight-bold'>{ele.word}</td>
                                     <td>{ele.type}</td>
                                     <td>{ele.phonetic}</td>
-                                    <td>{ele.definitions[0].definition}</td>
+                                    {ele.definitions
+                                        ? <td>{ele.definitions[0].definition}</td>
+                                        : <td></td>
+                                    }
                                     <td>
                                         <button className='btn btn-warning mx-1'
                                             onClick={() => handleEditWord(index)}

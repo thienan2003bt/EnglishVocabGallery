@@ -67,7 +67,7 @@ const getAllUsers = async (page, limit) => {
                 nest: true,
                 offset: offset,
                 limit: limit,
-                order: [['id', 'DECS']]
+                order: [['id', 'DESC']]
             });
         } else {
             data = await db.User.findAll({
@@ -77,7 +77,7 @@ const getAllUsers = async (page, limit) => {
                 },
                 raw: true,
                 nest: true,
-                order: [['id', 'DECS']]
+                order: [['id', 'DESC']]
             });
         }
 

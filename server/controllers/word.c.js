@@ -2,7 +2,7 @@ const WordService = require('../services/word.s');
 
 const readAllWords = async (req, res, next) => {
     try {
-        let response = await WordService.readAllWords();
+        let response = await WordService.readAllWords(req.query.page, req.query.limit);
         return res.status(response.status).json(response);
     } catch (error) {
         res.status(500).json({

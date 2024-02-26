@@ -20,27 +20,39 @@ const readAllWords = async (page, limit) => {
             limit = +limit;
             let offset = (page - 1) * limit;
 
-            data = await db.Word.findAll({
+            const { count, rows } = await db.Word.findAndCountAll({
                 include: { model: db.Definition },
                 raw: true,
                 nest: true,
                 offset: offset,
                 limit: limit,
-                order: [['id', 'DECS']]
+                order: [['id', 'DESC']]
             });
+
+            if (count && rows) {
+                data = {
+                    wordArr: rows,
+                    total: count,
+                    totalPage: Math.ceil(count / limit),
+                }
+
+                return new APIReturnData(200, `Fetch all ${data.total} users successfully !`, data);
+            } else {
+                return new APIReturnData(404, "There is no word in database", null);
+            }
         } else {
-            data = await db.Definition.findAll({
+            data = await db.Word.findAll({
                 include: { model: db.Definition },
                 raw: true,
                 nest: true,
-                order: [['id', 'DECS']]
+                order: [['id', 'DESC']]
             });
         }
 
         if (data && data.length > 0) {
-            return new APIReturnData(200, `Fetch all ${data.length} users is successfully`, null);
+            return new APIReturnData(200, `Fetch all ${data.length} users successfully !`, data);
         } else {
-            return new APIReturnData(404, "There is no user in database", null);
+            return new APIReturnData(404, "There is no word in database", null);
         }
     } catch (error) {
         console.log("Word service error: " + error.message);
@@ -111,7 +123,7 @@ const deleteWord = async (wordID) => {
         }
         //ensure that the username is cannot be changed
         await existingWord.destroy();
-        return new APIReturnData(200, "Delete user successfully !", wordData.id);
+        return new APIReturnData(200, "Delete user successfully !", wordID);
     } catch (error) {
         console.log("Word service error: " + error.message);
         return new APIReturnData(500, "Word service error: " + error.message, null);

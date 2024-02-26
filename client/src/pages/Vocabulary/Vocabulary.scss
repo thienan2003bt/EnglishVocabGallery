@@ -35,6 +35,15 @@
                 margin-top: 15px;
             }
         }
+
+        & .limit-label {
+            margin: 8px 24px 0 40px;
+        }
+
+        & .limit-select-divider {
+            color: rgba(99, 97, 88, 0.737) !important;
+        }
+
     }
 
     & .vocab-content {
