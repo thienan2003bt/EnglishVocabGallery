@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import { toast } from 'react-toastify';
 import './Vocabulary.scss';
@@ -7,7 +8,7 @@ import AddWordModal from '../../components/AddWordModal/AddWordModal';
 import WordService from '../../services/word.s';
 
 function Vocabulary(props) {
-
+    const navigate = useNavigate();
     const [totalWords, setTotalWords] = useState(0);
     const [totalPages, setTotalPages] = useState(10);
     const [limit, setLimit] = useState(1);
@@ -57,17 +58,8 @@ function Vocabulary(props) {
     }
 
 
-    const handleEditWord = (index) => {
-        if (index >= 0 && index < wordArr.length) {
-            if (window.confirm(`Do you want to edit the word: ${wordArr[index].word} ?`) === true) {
-                //TODO: call API here
-                let _wordArr = _.cloneDeep(wordArr);
-                setWordArr(_wordArr);
-                toast.success(`Successfully edit the word: ${wordArr[index].word}!`);
-            }
-        } else {
-            toast.error('Invalid index of word !');
-        }
+    const handleDetailWord = (wordID) => {
+        navigate(`/vocabulary/${wordID}`);
     }
 
     const handleDeleteWord = (index) => {
@@ -180,12 +172,12 @@ function Vocabulary(props) {
                                     }
                                     <td>
                                         <button className='btn btn-warning mx-1'
-                                            onClick={() => handleEditWord(index)}
+                                            onClick={() => handleDetailWord(ele.id)}
                                         >
-                                            Edit
+                                            Detail
                                         </button>
                                         <button className='btn btn-danger mx-1'
-                                            onClick={() => handleDeleteWord(index)}
+                                            onClick={() => handleDeleteWord(ele.id)}
                                         >
                                             Delete
                                         </button>

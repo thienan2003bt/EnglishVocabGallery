@@ -1,0 +1,21 @@
+.vocab-definition {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    
+    background-color: #eaddff; 
+
+    padding: 8px;
+    border-radius: 8px;
+
+    & .definition-statistics {
+        background-color: #6750a4 !important;
+        color: white;
+
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        padding: 0 8px;
+        margin: 0 12px;
+    }
+}

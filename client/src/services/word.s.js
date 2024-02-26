@@ -11,10 +11,15 @@ const createNewWord = async (wordData) => {
     return response;
 }
 
+const getWordByID = async (wordID) => {
+    let response = await axios.get(`api/word/detail${wordID}`);
+    return response;
+}
 
 const WordService = {
     fetchAllWords,
     createNewWord,
+    getWordByID
 }
 
 

@@ -170,11 +170,33 @@ const deleteWord = async (wordID) => {
     }
 }
 
+const getWordByID = async (wordID) => {
+    try {
+        let data = await db.Word.findOne({
+            where: { id: wordID },
+            raw: true,
+        });
+
+        if (!data) {
+            return new APIReturnData(404, `Word with id: ${wordID} is not found !`, null);
+        }
+
+        let response = await DefinitionService.getDefinitionsByWord(wordID)
+        data.definitions = response.data;
+        return new APIReturnData(200, "Word is returned successfully !", data);
+
+    } catch (error) {
+        console.log("Word service error: " + error.message);
+        return new APIReturnData(500, "Word service error: " + error.message, null);
+    }
+}
+
 const WordService = {
     readAllWords,
     createNewWord,
     updateWord,
-    deleteWord
+    deleteWord,
+    getWordByID
 }
 
 

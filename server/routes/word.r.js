@@ -6,6 +6,7 @@ const WordController = require('../controllers/word.c');
 
 //GET
 router.get('/read', WordController.readAllWords);
+router.get('/detail:wordID', WordController.getWordByID);
 
 //POST
 router.post('/create', WordController.createNewWord);

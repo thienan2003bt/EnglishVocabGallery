@@ -52,11 +52,26 @@ const deleteWord = async (req, res, next) => {
     }
 }
 
+const getWordByID = async (req, res, next) => {
+    try {
+        let { wordID } = req.params;
+        let response = await WordService.getWordByID(wordID);
+        return res.status(response.status).json(response);
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: "Service error: " + error.message,
+            data: null,
+        });
+    }
+}
+
 const WordController = {
     readAllWords,
     createNewWord,
     updateWord,
-    deleteWord
+    deleteWord,
+    getWordByID
 }
 
 module.exports = WordController;
