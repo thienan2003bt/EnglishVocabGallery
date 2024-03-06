@@ -16,6 +16,7 @@
 ✅ Using **Dotenv** dependency for creating environment constants.
 ✅ Using **Nodemon** dependency for developing source code.
 ✅ Using **Sequelize, Sequelize-cli** dependency for for setting up ORM - Object Relational Mapping.
+✅ Using **Passport, Passport Local and Express Session** dependency for authentication.
 
 
 ### 📍Database

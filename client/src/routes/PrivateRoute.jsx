@@ -9,7 +9,9 @@ function PrivateRoute(props) {
     return (
         <div>
             {(user && user.isAuthenticated === true)
-                ? <>{children}</>
+                ? <>
+                    {children}
+                </>
                 : <Navigate to="/login" />
             }
         </div>

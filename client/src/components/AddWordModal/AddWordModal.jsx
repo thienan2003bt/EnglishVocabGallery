@@ -14,7 +14,7 @@ function AddWordModal(props) {
     const { show, dataModal, handleClose, handleSave } = props;
     const defaultWordData = {
         word: '',
-        type: 'noun', //noun by default
+        type: 'Noun', //noun by default
         phonetic: '',
         categories: '',
         definitions: [],
@@ -39,7 +39,7 @@ function AddWordModal(props) {
 
 
     const checkValidate = () => {
-        const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level', 'categories'];
+        const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level'];
         for (let i = 0; i < validateAttributes.length; i++) {
 
 
@@ -87,6 +87,7 @@ function AddWordModal(props) {
                 if (response && response.data && parseInt(response.status) === 200) {
                     toast.success(response.message);
                     handleSave();
+                    setWordData(defaultWordData);
                 } else {
                     toast.error("Error creating new word: " + response?.message);
                 }
@@ -173,7 +174,7 @@ function AddWordModal(props) {
                                 </select>
                             </div>
                             <div className='col-6 form-group'>
-                                <label htmlFor="categories">Categories: <span className='red'>(*)</span>: </label>
+                                <label htmlFor="categories">Categories: </label>
                                 <input className="form-control"
                                     type="text" name="categories" id="categories"
                                     value={wordData.categories} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />

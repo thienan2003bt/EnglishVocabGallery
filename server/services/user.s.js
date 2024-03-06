@@ -82,7 +82,7 @@ const getAllUsers = async (page, limit) => {
         }
 
         if (data && data.length > 0) {
-            return updateReturnedData(200, `Fetch all ${data.length} users is successfully`, null);
+            return updateReturnedData(200, `Fetch all ${data.length} users is successfully`, data);
         } else {
             return updateReturnedData(404, "There is no user in database", null);
         }
@@ -196,10 +196,31 @@ const handleLogin = async (userData) => {
     }
 }
 
+const getUserByID = async (userID) => {
+    try {
+        let user = await db.User.findOne({
+            where: {
+                id: UserProvider,
+                raw: true,
+            }
+        })
+
+        if (!user) {
+            return updateReturnedData(404, "User not found", null);
+        }
+
+        return updateReturnedData(200, "Get user by id successfully", user);
+    } catch (error) {
+        console.log("User service error: " + error.message);
+        return updateReturnedData(500, "User service error: " + error.message, null);
+    }
+}
+
 module.exports = UserService = {
     getAllUsers,
     createNewUser,
     updateUser,
     deleteUser,
     handleLogin,
+    getUserByID,
 }

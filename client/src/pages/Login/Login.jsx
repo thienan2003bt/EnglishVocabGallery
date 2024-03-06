@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
@@ -35,19 +35,19 @@ function Login(props) {
         if (state) {
             try {
                 let response = await UserService.handleLogin({ email, password });
-                if (response && parseInt(response.status) === 200) {
+                if (response && response.data && parseInt(response.status) === 200) {
                     toast.success(response.message);
                     setEmail('');
                     setPassword('');
 
                     let contextData = {
                         isAuthenticated: true,
-                        //TODO: add token here
-                        token: 'access token',
-                        account: response.data
+                        token: response.data.accessToken,
+                        account: response.data.account,
                     }
+
                     loginContext(contextData);
-                    localStorage.setItem('accessToken', contextData.token);
+                    localStorage.setItem('accessToken', user.token);
                     navigate('/');
                 } else {
                     toast.error("Error signing up: " + response?.message);

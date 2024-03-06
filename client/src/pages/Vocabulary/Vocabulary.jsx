@@ -11,7 +11,7 @@ function Vocabulary(props) {
     const navigate = useNavigate();
     const [totalWords, setTotalWords] = useState(0);
     const [totalPages, setTotalPages] = useState(10);
-    const [limit, setLimit] = useState(1);
+    const [limit, setLimit] = useState(10); //10 by default
     const [currentPage, setCurrentPage] = useState(1);
     const [isShowAddWordModal, setIsShowAddWordModal] = useState(false);
     const [dataModal, setDataModal] = useState(null);
@@ -78,6 +78,13 @@ function Vocabulary(props) {
         }
     }
 
+    const handleRefresh = async () => {
+        await fetchAllWords();
+        toast.success(`Successfully refresh all words`);
+    }
+
+
+
 
     //modal functions
     const handleCloseAddWordModal = async () => {
@@ -87,6 +94,7 @@ function Vocabulary(props) {
 
     const handleConfirmAddWordModal = async () => {
         setIsShowAddWordModal(false);
+        await fetchAllWords();
     }
 
     return (
@@ -123,10 +131,14 @@ function Vocabulary(props) {
                         <div className='limit-select-container'>
                             <select className="form-select limit-select"
                                 value={limit} onChange={(e) => setLimit(e.target.value)}>
-                                <option defaultValue="1">1</option>
+                                <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
                                 <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option defaultValue="10">10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
                             </select>
                         </div>
                     </div>
@@ -134,7 +146,7 @@ function Vocabulary(props) {
 
                     <div className='col-3 my-3 ms-5'>
                         <button type='button' className='btn btn-success mx-2' onClick={() => setIsShowAddWordModal(true)}>Add new word</button>
-                        <button type='button' className='btn btn-primary mx-2'>Refresh</button>
+                        <button type='button' className='btn btn-primary mx-2' onClick={() => handleRefresh()}>Refresh</button>
 
                     </div>
                 </div>
@@ -145,6 +157,7 @@ function Vocabulary(props) {
                 <div className='vocab-content my-3 table-responsive'>
                     {/* TODO: implement this part in cardView */}
                     <table className='table table-info table-hover table-bordered border-success caption-top'>
+                        <caption><strong>List of words: {totalWords}</strong></caption>
                         <thead>
                             <tr>
                                 <th scope='col'>#</th>

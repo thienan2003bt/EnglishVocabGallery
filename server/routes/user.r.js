@@ -5,6 +5,7 @@ const UserController = require('../controllers/user.c');
 
 //GET
 router.get('/read', UserController.readAllUsers);
+router.get('/account', UserController.readUserAccount);
 
 //POST
 router.post('/create', UserController.createNewUser);

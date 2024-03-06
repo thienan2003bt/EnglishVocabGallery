@@ -21,7 +21,11 @@ const deleteUser = async (userID) => {
 }
 
 const handleLogin = async (userData) => {
-    let response = await axios.post(`api/login`, { ...userData });
+    let response = await axios.post(`api/login`, { ...userData }, {
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
     return response;
 }
 
@@ -32,13 +36,19 @@ const handleSignup = async (userData) => {
     return response;
 }
 
+const getUserAccount = async () => {
+    let response = await axios.get(`api/user/account`);
+    return response;
+}
+
 const UserService = {
     fetchUsers,
     createNewUser,
     updateUser,
     deleteUser,
     handleLogin,
-    handleSignup
+    handleSignup,
+    getUserAccount,
 };
 
 export default UserService;

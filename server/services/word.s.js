@@ -4,7 +4,7 @@ const DefinitionService = require('./definition.s');
 
 //supporting methods
 const validateWordDataBeforeInsertion = (wordData) => {
-    const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level', 'categories'];
+    const validateAttributes = ['word', 'type', 'definitions', 'phonetic', 'level'];
     for (let i = 0; i < validateAttributes.length; i++) {
         let attribute = validateAttributes[i];
 
@@ -25,10 +25,7 @@ const addAllNewDefinitions = async (wordData, wordID) => {
 
         try {
             let response = await DefinitionService.createNewDefinition(definition);
-            if (parseInt(response.status) === 200) {
-                console.log("Create definition successfully with content: ");
-                console.log(definition.content);
-            } else {
+            if (parseInt(response.status) !== 200) {
                 console.log("Error creating new definition: " + definition.content + "; msg: " + response?.message);
             }
         } catch (error) {
