@@ -15,7 +15,7 @@ function Vocabulary(props) {
     const [currentPage, setCurrentPage] = useState(1);
     const [isShowAddWordModal, setIsShowAddWordModal] = useState(false);
     const [dataModal, setDataModal] = useState(null);
-
+    const [searchWord, setSearchWord] = useState('');
 
     const [wordArr, setWordArr] = useState({});
 
@@ -27,7 +27,16 @@ function Vocabulary(props) {
 
     //re-render whenever currentPage changes
     useEffect(() => {
-        fetchAllWords();
+        if (searchWord === '') {
+            fetchAllWords();
+        } else {
+            handleSearch({
+                target: {
+                    value: searchWord
+                },
+                code: 'Enter'
+            });
+        }
     }, [currentPage, limit]);
 
     const restructureWordData = (data) => {
@@ -57,6 +66,29 @@ function Vocabulary(props) {
 
     }
 
+    const handleSearch = async (e) => {
+        let value = e.target.value;
+        let code = e.code;
+        if (code === "Enter" || code === "NumpadEnter") {
+            //alert("You searched for the word " + value);
+
+            try {
+                let response = await WordService.searchWord(value, currentPage, limit);
+                if (response && response.data && response.status === 200) {
+                    toast.success(response.message);
+                    restructureWordData(response.data);
+                } else {
+                    toast.error("Error searching words: " + response?.message);
+                }
+            } catch (error) {
+                toast.error("Error searching words: " + error.message);
+            }
+        } else {
+            setSearchWord(value);
+        }
+
+    }
+
 
     const handleDetailWord = (wordID) => {
         navigate(`/vocabulary/${wordID}`);
@@ -80,6 +112,7 @@ function Vocabulary(props) {
 
     const handleRefresh = async () => {
         await fetchAllWords();
+        setSearchWord('');
         toast.success(`Successfully refresh all words`);
     }
 
@@ -125,7 +158,9 @@ function Vocabulary(props) {
                     <div className='col-5 my-3 d-flex flex-row flex-wrap'>
                         <div className='input-group w-50 me-3'>
                             <i className="input-group-text fa-brands fa-searchengin"></i>
-                            <input className='form-control' type='text' id='search' name='search' placeholder='Search here ...' />
+                            <input className='form-control' type='text' id='search' name='search' placeholder='Search here ...'
+                                value={searchWord} onChange={(e) => setSearchWord(e.target.value)}
+                                onKeyDown={(e) => handleSearch(e)} />
                         </div>
                         <label className='limit-label'>Word / Page: </label>
                         <div className='limit-select-container'>

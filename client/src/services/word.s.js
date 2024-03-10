@@ -16,10 +16,19 @@ const getWordByID = async (wordID) => {
     return response;
 }
 
+const searchWord = async (wordData, page, limit) => {
+    let response = await axios.post(`api/word/search`, {
+        wordData: wordData,
+        page: page,
+        limit: limit
+    });
+    return response;
+}
 const WordService = {
     fetchAllWords,
     createNewWord,
-    getWordByID
+    getWordByID,
+    searchWord
 }
 
 

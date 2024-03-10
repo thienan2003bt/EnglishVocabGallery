@@ -10,7 +10,7 @@ router.get('/detail:wordID', WordController.getWordByID);
 
 //POST
 router.post('/create', WordController.createNewWord);
-
+router.post('/search', WordController.searchWord);
 //PUT
 router.put('/update', WordController.updateWord);
 

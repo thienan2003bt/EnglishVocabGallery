@@ -14,9 +14,7 @@ const extractTokenFromRequest = (req) => {
 
 const checkUser = async (req, res, next) => {
     try {
-        console.log("Have reached the check user logic");
         let pathName = '/' + req.baseUrl.split('/').slice(-1);
-        console.log("Req pathName: " + pathName);
         if (nonSecurePaths.includes(pathName) && pathName !== '/account') {
             return next();
         }

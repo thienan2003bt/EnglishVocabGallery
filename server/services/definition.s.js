@@ -125,7 +125,11 @@ const getDefinitionsByWord = async (wordID) => {
         let data = await db.Definition.findAll({
             where: { wordID: wordID },
             raw: true,
-            order: [['upVotes', 'DESC'], ['id', 'DESC']]
+            nest: true,
+            order: [['upVotes', 'DESC'], ['id', 'DESC']],
+            include: {
+                model: db.User, attributes: ['id', 'username']
+            }
         });
 
         if (!data) {

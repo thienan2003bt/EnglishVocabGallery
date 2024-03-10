@@ -1,4 +1,5 @@
 const db = require('../models/index');
+const { Op } = require('sequelize');
 const APIReturnData = require('../models/APIReturnData');
 const DefinitionService = require('./definition.s');
 
@@ -46,6 +47,8 @@ const buildWordDataWithDefinitions = async (wordArr) => {
 
     return wordArr;
 }
+
+
 // functional methods
 const readAllWords = async (page, limit) => {
     try {
@@ -73,7 +76,7 @@ const readAllWords = async (page, limit) => {
                     totalPage: Math.ceil(count / limit),
                 }
 
-                return new APIReturnData(200, `Fetch all ${data.total} users successfully !`, data);
+                return new APIReturnData(200, `Fetch all ${data.total} words successfully !`, data);
             } else {
                 return new APIReturnData(404, "There is no word in database", null);
             }
@@ -188,12 +191,74 @@ const getWordByID = async (wordID) => {
     }
 }
 
+const searchWord = async (wordData, page, limit) => {
+
+
+    try {
+        if (page && limit) {
+            page = parseInt(page);
+            limit = parseInt(limit);
+            let offset = (page - 1) * limit;
+            let { count, rows } = await db.Word.findAndCountAll({
+                where: {
+                    word: {
+                        [Op.substring]: wordData,
+                    }
+                },
+                raw: true,
+                nest: true,
+                offset: offset,
+                limit: limit,
+                order: [['id', 'DESC']]
+            });
+
+            if (count && rows) {
+                rows = await buildWordDataWithDefinitions(rows);
+
+                data = {
+                    wordArr: rows,
+                    total: count,
+                    totalPage: Math.ceil(count / limit),
+                }
+
+                return new APIReturnData(200, `Search ${wordData} successfully with ${data.total} results!`, data);
+            }
+
+            return new APIReturnData(404, `No word result with searching: ${wordData} `, null)
+        } else {
+            let data = await db.Word.findAll({
+                where: {
+                    word: {
+                        [Op.substring]: wordData,
+                    }
+                },
+                raw: true,
+                nest: true,
+                offset: offset,
+                limit: limit,
+                order: [['id', 'DESC']]
+            });
+
+            if (!data || data.length <= 0) {
+                return new APIReturnData(404, `No word result with searching: ${wordData} `, null)
+            }
+
+            data = await buildWordDataWithDefinitions(data);
+            return new APIReturnData(200, `Search ${wordData} successfully with ${data.length} results!`, data);
+        }
+
+    } catch (error) {
+        console.log("Word service error: " + error.message);
+        return new APIReturnData(500, "Word service error: " + error.message, null);
+    }
+}
 const WordService = {
     readAllWords,
     createNewWord,
     updateWord,
     deleteWord,
-    getWordByID
+    getWordByID,
+    searchWord,
 }
 
 

@@ -12,6 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             // define association here
             Definition.belongsTo(models.Word, { foreignKey: 'wordID' });
+            Definition.belongsTo(models.User, { foreignKey: 'author' });
         }
     }
     Definition.init({
