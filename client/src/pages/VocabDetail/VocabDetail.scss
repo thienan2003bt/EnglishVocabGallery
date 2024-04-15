@@ -28,9 +28,13 @@
         }
     }
 
-    & strong {
+    & .vocab-definition-content {
         place-self: center start;
         text-align: start !important;
+
+        & label {
+            margin-right: 4px;
+        }
     }
 
     & .vocab-definition-actions {

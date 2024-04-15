@@ -14,7 +14,6 @@ function Vocabulary(props) {
     const [limit, setLimit] = useState(10); //10 by default
     const [currentPage, setCurrentPage] = useState(1);
     const [isShowAddWordModal, setIsShowAddWordModal] = useState(false);
-    const [dataModal, setDataModal] = useState(null);
     const [searchWord, setSearchWord] = useState('');
 
     const [wordArr, setWordArr] = useState({});
@@ -264,7 +263,7 @@ function Vocabulary(props) {
                 </div>
 
 
-                <AddWordModal show={isShowAddWordModal} dataModal={dataModal} handleClose={handleCloseAddWordModal} handleSave={handleConfirmAddWordModal} />
+                <AddWordModal show={isShowAddWordModal} handleClose={handleCloseAddWordModal} handleSave={handleConfirmAddWordModal} />
             </div>
 
         </div>

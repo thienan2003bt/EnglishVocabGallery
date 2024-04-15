@@ -11,6 +11,6 @@ router.post('/signup', UserController.handleSignup);
 //MIDDLEWARES
 router.use('/user', require('./user.r'));
 router.use('/word', require('./word.r'));
-
+router.use('/definition', require('./definition.r'));
 
 module.exports = router;

@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import WordService from '../../services/word.s';
+import DefinitionService from '../../services/definition.s';
 import { toast } from 'react-toastify';
 
 import './VocabDetail.scss';
-
+import AddWordModal from '../../components/AddWordModal/AddWordModal';
 
 function VocabDetail(props) {
 
     const { wordID } = useParams();
     const [vocab, setVocab] = useState('');
+    const [isShowAddWordModal, setShowAddWordModal] = useState(false);
+    const [dataModal, setDataModal] = useState('');
+    const [definitionEditingIndex, setDefinitionEditingIndex] = useState(0);
+    const [definitionEditingValue, setDefinitionEditingValue] = useState("");
+
     //did mount
     useEffect(() => {
         fetchVocabulary();
@@ -30,6 +36,59 @@ function VocabDetail(props) {
         }
     }
 
+    const handleEditDefinition = async (index) => {
+        setDefinitionEditingIndex(index);
+    }
+
+
+    const handleSaveEdit = async () => {
+
+        if (definitionEditingValue === "") {
+            return setDefinitionEditingIndex(-1);
+        }
+
+        let currentID = vocab.definitions[definitionEditingIndex].id;
+        try {
+            let response = await DefinitionService.handleEditDefinition(vocab.id, currentID, definitionEditingValue);
+            if (response && response.data && parseInt(response.status) === 200) {
+                toast.success(response.message);
+
+                let newVocab = {
+                    ...vocab,
+                };
+                newVocab.definitions[definitionEditingIndex].content = definitionEditingValue;
+                setVocab(newVocab);
+
+                setDefinitionEditingIndex(-1);
+                setDefinitionEditingValue("");
+            } else {
+                toast.error("Error editing definition: " + response?.message);
+            }
+        } catch (error) {
+            toast.error("Error editing definition: " + error.message);
+        }
+    }
+
+    const handleOpenAddWordModal = () => {
+        let newDataModal = {
+            ...vocab,
+            definitions: []
+        }
+        setDataModal(newDataModal);
+        setShowAddWordModal(true);
+    }
+
+    const handleCloseAddWordModal = () => {
+        setShowAddWordModal(false);
+    }
+
+    const handleConfirmAddWordModal = async () => {
+        //TODO: call API for adding new definitions for this word
+        setShowAddWordModal(false);
+        setDataModal('');
+        await fetchVocabulary();
+    }
+
     return (
         <div className='vocab-detail-container'>
             <div className='container my-5'>
@@ -45,7 +104,7 @@ function VocabDetail(props) {
 
                 <div className='vocab-definitions-list my-5'>
                     <div className="vocab-detail-add col-12">
-                        <button className="btn btn-success">Add new definition</button>
+                        <button className="btn btn-success" onClick={() => handleOpenAddWordModal()}>Add new definition</button>
                     </div>
 
                     {vocab.definitions && vocab.definitions.length > 0
@@ -66,11 +125,30 @@ function VocabDetail(props) {
                                         <span>{definition.author}</span>
                                     </div>
                                 </div>
-                                <strong>{definition.content}</strong>
+
+                                {definitionEditingIndex === index
+                                    ? <div className="vocab-definition-content col-8">
+                                        <label>New Definition here</label>
+                                        <input className='form-control'
+                                            value={definitionEditingValue} onChange={(e) => setDefinitionEditingValue(e.target.value)} />
+                                    </div>
+
+                                    : <strong className="vocab-definition-content" id={`vocab-definition-content-${index}`}>{definition.content}</strong>
+                                }
 
                                 <div className='vocab-definition-actions'>
-                                    <button className='btn btn-warning'>Edit</button>
-                                    <button className='btn btn-danger'>Delete</button>
+                                    {definitionEditingIndex === index
+                                        ? <>
+                                            <button className='btn btn-success' onClick={() => handleSaveEdit()}>Save changes</button>
+                                            <button className='btn btn-secondary'
+                                                onClick={() => { setDefinitionEditingIndex(-1); setDefinitionEditingValue("") }}>Cancel</button>
+                                        </>
+                                        : <>
+                                            <button className='btn btn-warning' onClick={() => handleEditDefinition(index)}>Edit</button>
+                                            <button className='btn btn-danger'>Delete</button>
+                                        </>
+                                    }
+
                                 </div>
                             </div>
                         })
@@ -78,7 +156,13 @@ function VocabDetail(props) {
                     }
                 </div>
 
+
             </div>
+
+            <AddWordModal show={isShowAddWordModal} dataModal={dataModal}
+                handleClose={handleCloseAddWordModal} handleSave={handleConfirmAddWordModal}
+            />
+
         </div>
     );
 }

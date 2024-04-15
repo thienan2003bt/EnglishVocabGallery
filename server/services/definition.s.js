@@ -79,23 +79,27 @@ const createNewDefinition = async (definitionData) => {
     }
 }
 
-const updateDefinition = async (definitionData) => {
+const updateDefinition = async (vocabID, definitionID, newDefinitionContent) => {
     try {
         let existingDefinition = await db.Definition.findOne({
-            where: { id: definitionData.id },
+            where: {
+                id: definitionID,
+                wordID: vocabID,
+            },
         });
 
         if (!existingDefinition) {
             return new APIReturnData(404, "Definition is not found: ", null);
         }
 
-        //ensure that the Definition is cannot be changed
-        definitionData.Definition = existingDefinition.Definition;
-        existingDefinition.updatedAt = new Date();
+        existingDefinition.content = newDefinitionContent;
+        existingDefinition.updatedAt = Date.now();
 
-        await existingDefinition.update();
+        await existingDefinition.update({
+            ...existingDefinition.dataValues
+        });
 
-        return new APIReturnData(200, "Update Definition successfully !", definitionData.id);
+        return new APIReturnData(200, "Update definition successfully !", existingDefinition.id);
     } catch (error) {
         console.log("Definition service error: " + error.message);
         return new APIReturnData(500, "Definition service error: " + error.message, null);
