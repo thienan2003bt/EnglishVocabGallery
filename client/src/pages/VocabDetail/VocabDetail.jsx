@@ -44,15 +44,34 @@ function VocabDetail(props) {
                 </div>
 
                 <div className='vocab-definitions-list my-5'>
+                    <div className="vocab-detail-add col-12">
+                        <button className="btn btn-success">Add new definition</button>
+                    </div>
+
                     {vocab.definitions && vocab.definitions.length > 0
                         ? vocab.definitions.map((definition, index) => {
                             return <div className='vocab-definition my-3' key={`definition-${index}`}>
                                 <div className='definition-statistics'>
-                                    <div>🔼: {definition.upVotes}</div>
-                                    <div>🔽: {definition.downVotes}</div>
-                                    <div>👤: {definition.author}</div>
+                                    <div>
+                                        <button className='btn btn-info'>🔼</button>
+                                        <span>{definition.upVotes}</span>
+                                    </div>
+                                    <div>
+                                        <button className='btn btn-info'>🔽</button>
+                                        <span>{definition.downVotes}</span>
+                                    </div>
+
+                                    <div>
+                                        <button className='btn btn-info' disabled>👤</button>
+                                        <span>{definition.author}</span>
+                                    </div>
                                 </div>
                                 <strong>{definition.content}</strong>
+
+                                <div className='vocab-definition-actions'>
+                                    <button className='btn btn-warning'>Edit</button>
+                                    <button className='btn btn-danger'>Delete</button>
+                                </div>
                             </div>
                         })
                         : <h2>There is currently no definition for this word.</h2>
