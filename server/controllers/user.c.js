@@ -1,13 +1,17 @@
 const UserService = require("../services/user.s");
 const JWTMiddleware = require('../middlewares/jsonwebtoken');
 
+require('dotenv').config();
+
+const EXPIRE_IN_COOKIE = Number(process.env.EXPIRE_IN_COOKIE);
+
 const handleLogin = async (req, res, next) => {
     try {
         let response = await UserService.handleLogin(req.body);
         if (response && response.data && parseInt(response.status) === 200) {
             let token = JWTMiddleware.signToken(response.data);
 
-            res.cookie('accessToken', token, { httpOnly: true, maxAge: 60 * 60 * 1000 }); // 1 hour by default
+            res.cookie('accessToken', token, { httpOnly: true, maxAge: EXPIRE_IN_COOKIE });
             return res.status(response.status).json({
                 ...response,
                 data: {

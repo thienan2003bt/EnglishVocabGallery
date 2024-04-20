@@ -1,9 +1,11 @@
 const db = require('../models/index');
 const APIReturnData = require('../models/APIReturnData');
-
+const DateFormatter = require('./DateFormatter.s');
 
 //supporting methods
-
+const normalizeDateData = (dateData) => {
+    return DateFormatter.formatDate(dateData);
+}
 
 // functional methods
 const readAllDefinitions = async (page, limit) => {
@@ -106,17 +108,21 @@ const updateDefinition = async (vocabID, definitionID, newDefinitionContent) => 
     }
 };
 
-const deleteDefinition = async (definitionID) => {
+const deleteDefinition = async (vocabID, definitionID) => {
     try {
         let existingDefinition = await db.Definition.findOne({
-            where: { id: definitionID },
+            where: {
+                wordID: vocabID,
+                id: definitionID,
+            },
         });
 
         if (!existingDefinition) {
             return new APIReturnData(404, "Definition is not found !", null);
         }
-        //ensure that the username is cannot be changed
+
         await existingDefinition.destroy();
+
         return new APIReturnData(200, "Delete definition successfully !", definitionID);
     } catch (error) {
         console.log("Definition service error: " + error.message);
@@ -135,6 +141,15 @@ const getDefinitionsByWord = async (wordID) => {
                 model: db.User, attributes: ['id', 'username']
             }
         });
+
+        data = data.map((definition) => {
+            let newDefinition = {
+                ...definition,
+                createdAt: normalizeDateData(definition.createdAt),
+                updatedAt: normalizeDateData(definition.updatedAt),
+            }
+            return newDefinition;
+        })
 
         if (!data) {
             return new APIReturnData(404, "Definition is not found !", null);
