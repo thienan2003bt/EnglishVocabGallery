@@ -1,5 +1,17 @@
 const DefinitionService = require('../services/definition.s');
 
+const createNewDefinition = async (req, res, next) => {
+    try {
+        const { newDefinitionData } = req.body;
+
+        let response = await DefinitionService.createNewDefinition(newDefinitionData);
+        return res.status(response.status).json(response);
+    } catch (error) {
+        console.error("Error handling create definition:" + error.message);
+        next(error);
+    }
+}
+
 const updateDefinition = async (req, res, next) => {
     try {
         const { vocabID, definitionID, newDefinitionContent } = req.body;
@@ -24,8 +36,9 @@ const deleteDefinition = async (req, res, next) => {
     }
 }
 const DefinitionController = {
+    createNewDefinition,
     updateDefinition,
-    deleteDefinition
+    deleteDefinition,
 }
 
 module.exports = DefinitionController;

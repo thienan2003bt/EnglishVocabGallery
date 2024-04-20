@@ -1,7 +1,11 @@
 import axios from '../configs/axios';
 
-
-
+const handleAddNewDefinition = async (newDefinitionData) => {
+    let response = await axios.post('/api/definition/create', {
+        newDefinitionData
+    });
+    return response;
+}
 
 const handleEditDefinition = async (vocabID, definitionID, newDefinitionContent) => {
     let response = await axios.put('/api/definition/edit', {
@@ -20,6 +24,7 @@ const handleDeleteDefinition = async (vocabID, definitionID) => {
 }
 
 const DefinitionService = {
+    handleAddNewDefinition,
     handleEditDefinition,
     handleDeleteDefinition,
 }

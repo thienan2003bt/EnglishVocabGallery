@@ -5,16 +5,14 @@ import DefinitionService from '../../services/definition.s';
 import { toast } from 'react-toastify';
 import { UserContext } from '../../context/UserContext';
 import './VocabDetail.scss';
-import AddWordModal from '../../components/AddWordModal/AddWordModal';
 import DeleteDefinitionModal from './DeleteDefinitionModal/DeleteDefinitionModal';
 
 function VocabDetail(props) {
     const { user } = useContext(UserContext);
     const { wordID } = useParams();
     const [vocab, setVocab] = useState('');
-    const [isShowAddWordModal, setShowAddWordModal] = useState(false);
+    const [newDefinitionContent, setNewDefinitionContent] = useState('');
     const [isShowDeleteDefinitionModal, setShowDeleteDefinitionModal] = useState(false);
-    const [dataModal, setDataModal] = useState('');
     const [dataDeleteModal, setDataDeleteModal] = useState('');
     const [definitionSelectedIndex, setDefinitionSelectedIndex] = useState(-1);
     const [definitionEditingValue, setDefinitionEditingValue] = useState("");
@@ -37,6 +35,32 @@ function VocabDetail(props) {
         } catch (error) {
             toast.error("Error fetching vocabulary: " + error.message);
         }
+    }
+
+
+    const handleConfirmAddDefinition = async () => {
+        let newDefinitionData = {
+            wordID: vocab.id,
+            content: newDefinitionContent,
+            upVotes: 0,
+            downVotes: 0,
+            author: parseInt(user.account.id),
+        }
+
+        try {
+            let response = await DefinitionService.handleAddNewDefinition(newDefinitionData);
+            if (response && response.data && parseInt(response.status) === 200) {
+                toast.success(response.message);
+
+                setNewDefinitionContent('');
+                await fetchVocabulary();
+            } else {
+                toast.error("Error adding new definition: " + response?.message);
+            }
+        } catch (error) {
+            toast.error("Error adding new definition: " + error.message);
+        }
+
     }
 
     const handleEditDefinition = async (index) => {
@@ -72,25 +96,6 @@ function VocabDetail(props) {
         }
     }
 
-    const handleOpenAddWordModal = () => {
-        let newDataModal = {
-            ...vocab,
-            definitions: []
-        }
-        setDataModal(newDataModal);
-        setShowAddWordModal(true);
-    }
-
-    const handleCloseAddWordModal = () => {
-        setShowAddWordModal(false);
-    }
-
-    const handleConfirmAddWordModal = async () => {
-        //TODO: call API for adding new definitions for this word
-        setShowAddWordModal(false);
-        setDataModal('');
-        await fetchVocabulary();
-    }
 
     const handleOpenDeleteDefinitionModal = (index) => {
         if (user.account.id !== vocab.definitions[index].author) {
@@ -152,7 +157,11 @@ function VocabDetail(props) {
 
                 <div className='vocab-definitions-list my-5'>
                     <div className="vocab-detail-add col-12">
-                        <button className="btn btn-success" onClick={() => handleOpenAddWordModal()}>Add new definition</button>
+                        <input className="form-control w-75" type="text" placeholder='Enter new definition here ...'
+                            value={newDefinitionContent} onChange={(e) => setNewDefinitionContent(e.target.value)} />
+
+                        <button className="btn btn-success col-2" onClick={() => handleConfirmAddDefinition()}>Add new definition</button>
+
                     </div>
 
                     {vocab.definitions && vocab.definitions.length > 0
@@ -208,15 +217,11 @@ function VocabDetail(props) {
 
             </div>
 
-            <AddWordModal show={isShowAddWordModal} dataModal={dataModal}
-                handleClose={handleCloseAddWordModal} handleSave={handleConfirmAddWordModal}
-            />
-
             <DeleteDefinitionModal show={isShowDeleteDefinitionModal} dataModal={dataDeleteModal}
                 handleClose={handleCloseDeleteDefinitionModal} handleConfirm={handleConfirmDeleteDefinitionModal}
             />
 
-        </div>
+        </div >
     );
 }
 

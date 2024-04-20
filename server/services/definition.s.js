@@ -57,23 +57,23 @@ const readAllDefinitions = async (page, limit) => {
     }
 }
 
-const createNewDefinition = async (definitionData) => {
+const createNewDefinition = async (newDefinitionData) => {
     try {
         let existingDefinition = await db.Definition.findOne({
             where: {
-                content: definitionData.content,
-                wordID: definitionData.wordID,
+                content: newDefinitionData.content,
+                wordID: newDefinitionData.wordID,
             }
         });
 
         if (existingDefinition) {
-            return new APIReturnData(400, `Definition is already existed!`, null);
+            return new APIReturnData(400, `definition is already existed!`, null);
         }
 
-        definitionData.createdAt = new Date();
+        newDefinitionData.createdAt = Date.now();
 
-        await db.Definition.create(definitionData);
-        return new APIReturnData(200, `New Definition is created successfully!`, definitionData.content);
+        await db.Definition.create(newDefinitionData);
+        return new APIReturnData(200, `New definition is created successfully!`, newDefinitionData.content);
 
     } catch (error) {
         console.log("Definition service error: " + error.message);

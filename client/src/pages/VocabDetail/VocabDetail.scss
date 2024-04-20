@@ -48,3 +48,14 @@
         }
     }
 }
+
+.vocab-detail-add {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-evenly;
+    align-items: center;
+
+    padding: 20px;
+    border: 2px dotted #ccc;
+    border-radius: 4px;
+}
