@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
@@ -25,7 +25,7 @@ function AddWordModal(props) {
     }
     const [wordData, setWordData] = useState(defaultWordData);
 
-    const title = "Add new word";
+    const title = dataModal ? "Add new definitions" : "Add new word";
 
     const handleSetWordData = (name, value) => {
         const _wordData = _.cloneDeep(wordData);
@@ -98,6 +98,19 @@ function AddWordModal(props) {
         }
     }
 
+    useEffect(() => {
+        if (dataModal) {
+            let newWordData = {
+                word: dataModal.word,
+                type: dataModal.type,
+                phonetic: dataModal.phonetic,
+                level: dataModal.level
+            }
+
+            setWordData(newWordData);
+        }
+    }, [dataModal])
+
 
     return (
         <>
@@ -132,12 +145,12 @@ function AddWordModal(props) {
                             <div className='col-6 form-group'>
                                 <label htmlFor="word">Word: <span className='red'>(*)</span>: </label>
                                 <input className="form-control"
-                                    type="text" id="word" name="word"
+                                    type="text" id="word" name="word" disabled={dataModal}
                                     value={wordData.word} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
                             </div>
                             <div className='col-6 form-group'>
                                 <label htmlFor="type">Type: <span className='red'>(*)</span>: </label>
-                                <select className="form-select" name="type" id="type"
+                                <select className="form-select" name="type" id="type" disabled={dataModal}
                                     value={wordData.type} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} >
                                     <option defaultValue="Noun">Noun</option>
                                     <option value="Verb">Verb</option>
@@ -157,13 +170,13 @@ function AddWordModal(props) {
                             <div className='col-6 form-group'>
                                 <label htmlFor="phonetic">Phonetic <span className='red'>(*)</span>: </label>
                                 <input className="form-control"
-                                    type="text" name="phonetic" id="phonetic"
+                                    type="text" name="phonetic" id="phonetic" disabled={dataModal}
                                     value={wordData.phonetic} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} />
                             </div>
 
                             <div className='col-6 form-group'>
                                 <label htmlFor="level">Level: <span className='red'>(*)</span>: </label>
-                                <select className="form-select" name="level" id="level"
+                                <select className="form-select" name="level" id="level" disabled={dataModal}
                                     value={wordData.level} onChange={(e) => handleSetWordData(e.target.name, e.target.value)} >
                                     <option defaultValue="A1">A1</option>
                                     <option value="A2">A2</option>

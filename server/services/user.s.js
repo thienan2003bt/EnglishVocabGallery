@@ -200,7 +200,7 @@ const getUserByID = async (userID) => {
     try {
         let user = await db.User.findOne({
             where: {
-                id: UserProvider,
+                id: userID,
                 raw: true,
             }
         })

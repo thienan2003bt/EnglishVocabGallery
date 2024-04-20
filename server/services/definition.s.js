@@ -1,9 +1,11 @@
 const db = require('../models/index');
 const APIReturnData = require('../models/APIReturnData');
-
+const DateFormatter = require('./DateFormatter.s');
 
 //supporting methods
-
+const normalizeDateData = (dateData) => {
+    return DateFormatter.formatDate(dateData);
+}
 
 // functional methods
 const readAllDefinitions = async (page, limit) => {
@@ -55,23 +57,23 @@ const readAllDefinitions = async (page, limit) => {
     }
 }
 
-const createNewDefinition = async (definitionData) => {
+const createNewDefinition = async (newDefinitionData) => {
     try {
         let existingDefinition = await db.Definition.findOne({
             where: {
-                content: definitionData.content,
-                wordID: definitionData.wordID,
+                content: newDefinitionData.content,
+                wordID: newDefinitionData.wordID,
             }
         });
 
         if (existingDefinition) {
-            return new APIReturnData(400, `Definition is already existed!`, null);
+            return new APIReturnData(400, `definition is already existed!`, null);
         }
 
-        definitionData.createdAt = new Date();
+        newDefinitionData.createdAt = Date.now();
 
-        await db.Definition.create(definitionData);
-        return new APIReturnData(200, `New Definition is created successfully!`, definitionData.content);
+        await db.Definition.create(newDefinitionData);
+        return new APIReturnData(200, `New definition is created successfully!`, newDefinitionData.content);
 
     } catch (error) {
         console.log("Definition service error: " + error.message);
@@ -79,40 +81,48 @@ const createNewDefinition = async (definitionData) => {
     }
 }
 
-const updateDefinition = async (definitionData) => {
+const updateDefinition = async (vocabID, definitionID, newDefinitionContent) => {
     try {
         let existingDefinition = await db.Definition.findOne({
-            where: { id: definitionData.id },
+            where: {
+                id: definitionID,
+                wordID: vocabID,
+            },
         });
 
         if (!existingDefinition) {
             return new APIReturnData(404, "Definition is not found: ", null);
         }
 
-        //ensure that the Definition is cannot be changed
-        definitionData.Definition = existingDefinition.Definition;
-        existingDefinition.updatedAt = new Date();
+        existingDefinition.content = newDefinitionContent;
+        existingDefinition.updatedAt = Date.now();
 
-        await existingDefinition.update();
+        await existingDefinition.update({
+            ...existingDefinition.dataValues
+        });
 
-        return new APIReturnData(200, "Update Definition successfully !", definitionData.id);
+        return new APIReturnData(200, "Update definition successfully !", existingDefinition.id);
     } catch (error) {
         console.log("Definition service error: " + error.message);
         return new APIReturnData(500, "Definition service error: " + error.message, null);
     }
 };
 
-const deleteDefinition = async (definitionID) => {
+const deleteDefinition = async (vocabID, definitionID) => {
     try {
         let existingDefinition = await db.Definition.findOne({
-            where: { id: definitionID },
+            where: {
+                wordID: vocabID,
+                id: definitionID,
+            },
         });
 
         if (!existingDefinition) {
             return new APIReturnData(404, "Definition is not found !", null);
         }
-        //ensure that the username is cannot be changed
+
         await existingDefinition.destroy();
+
         return new APIReturnData(200, "Delete definition successfully !", definitionID);
     } catch (error) {
         console.log("Definition service error: " + error.message);
@@ -131,6 +141,15 @@ const getDefinitionsByWord = async (wordID) => {
                 model: db.User, attributes: ['id', 'username']
             }
         });
+
+        data = data.map((definition) => {
+            let newDefinition = {
+                ...definition,
+                createdAt: normalizeDateData(definition.createdAt),
+                updatedAt: normalizeDateData(definition.updatedAt),
+            }
+            return newDefinition;
+        })
 
         if (!data) {
             return new APIReturnData(404, "Definition is not found !", null);
